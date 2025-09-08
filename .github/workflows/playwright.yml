@@ -71,8 +71,9 @@ jobs:
           name: ortoni-report
           path: ortoni-report
           retention-days: 7
-      - name: Deploy report to GitHub Pages
+      - name: Deploy merged report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ortoni-report
+          publish_dir: ortoni-report # Output folder of ortoni-report
+          force_orphan: true # Creates branch if it doesn’t exist
