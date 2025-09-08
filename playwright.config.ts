@@ -10,7 +10,7 @@ const config: OrtoniReportConfig = {
     "Test cycle": "Aug 27 - 2025",
     Epic: "New Feature Implementation",
   },
-  // filename: "index",
+  filename: "index",
   testType: "Regression",
   title: "My Test Title",
 };
