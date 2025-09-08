@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-test.use({ headless: true });
 test.setTimeout(10000);
 test("Handle new tab and interact with Edit page", async ({
   page,

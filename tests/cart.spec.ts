@@ -4,7 +4,7 @@ import { LoginPage } from "../pages/login.page";
 import { HomePage } from "../pages/home.page";
 import { ProductPage } from "../pages/product.page";
 import { credentials } from "../utils/test-data";
-// test.use({ headless: false });
+
 test.describe("Cart test", () => {
   test.describe("User can modify @cart", () => {
     test(
