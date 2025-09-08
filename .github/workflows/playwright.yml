@@ -63,3 +63,14 @@ jobs:
           path: ortoni-report
       - name: Merge shard reports
         run: npx ortoni-report merge-shards
+      - name: Upload merged report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ortoni-report
+          path: ortoni-report
+          retention-days: 7
+      - name: Deploy report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ortoni-report
