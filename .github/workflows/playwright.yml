@@ -36,6 +36,7 @@ jobs:
   merge-shards:
     needs: playwright-tests
     runs-on: ubuntu-latest
+    if: always() # Run even if the previous job failed or was cancelled
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,18 +48,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ortoni-report-1
-          path: ortoni-report/1
+          path: ortoni-report
       - uses: actions/download-artifact@v4
         with:
           name: ortoni-report-2
-          path: ortoni-report/2
+          path: ortoni-report
       - uses: actions/download-artifact@v4
         with:
           name: ortoni-report-3
-          path: ortoni-report/3
+          path: ortoni-report
       - uses: actions/download-artifact@v4
         with:
           name: ortoni-report-4
-          path: ortoni-report/4
+          path: ortoni-report
       - name: Merge shard reports
         run: npx ortoni-report merge-shards
