@@ -25,12 +25,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : 4,
-  shard: { total: 2, current: 2 },
-  reporter: [
-    ["html", { open: "never" }],
-    ["list"],
-    ["junit", { outputFile: "results.xml" }],
-  ],
+  reporter: [["ortoni-report", config]],
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
   // reporter: [["ortoni-report", config]],
