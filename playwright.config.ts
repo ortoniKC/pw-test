@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { OrtoniReportConfig } from "ortoni-report";
 const config: OrtoniReportConfig = {
-  open: "always",
+  open: "never",
   projectName: "LetCode - Test Automation",
   authorName: "Koushik",
   meta: {
