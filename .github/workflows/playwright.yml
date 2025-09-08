@@ -29,8 +29,8 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-${{ matrix.shardIndex }}
-          path: blob-report
+          name: ortoni-report-${{ matrix.shardIndex }}
+          path: ortoni-report
           retention-days: 1
 
   merge-shards:
@@ -46,19 +46,19 @@ jobs:
       - name: Download shard reports
         uses: actions/download-artifact@v4
         with:
-          name: blob-report-1
-          path: blob-reports/1
+          name: ortoni-report-1
+          path: ortoni-report/1
       - uses: actions/download-artifact@v4
         with:
-          name: blob-report-2
-          path: blob-reports/2
+          name: ortoni-report-2
+          path: ortoni-report/2
       - uses: actions/download-artifact@v4
         with:
-          name: blob-report-3
-          path: blob-reports/3
+          name: ortoni-report-3
+          path: ortoni-report/3
       - uses: actions/download-artifact@v4
         with:
-          name: blob-report-4
-          path: blob-reports/4
+          name: ortoni-report-4
+          path: ortoni-report/4
       - name: Merge shard reports
-        run: npx ortoni-report merge-shards blob-reports
+        run: npx ortoni-report merge-shards
