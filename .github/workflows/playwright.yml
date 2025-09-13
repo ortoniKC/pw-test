@@ -1,9 +1,11 @@
-name: Playwright Tests with Ortoni Report
+name: Playwright Tests
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
   push:
@@ -21,12 +23,17 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: lts/*
-          cache: npm
+          fetch-depth: 0
+
+      - name: Setup Node (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -37,8 +44,17 @@ jobs:
       - name: Run Playwright tests (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
         run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - name: Upload shard report
-        if: ${{ !cancelled() }}
+      - name: Show ortoni-report contents (if any)
+        run: |
+          echo "Listing ortoni-report directory (if present):"
+          if [ -d "ortoni-report" ]; then
+            find ortoni-report -maxdepth 3 -type f -print || true
+          else
+            echo "No ortoni-report directory generated."
+          fi
+
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: ${{ !cancelled() && always() }}
         uses: actions/upload-artifact@v4
         with:
           name: ortoni-report-${{ matrix.shardIndex }}
@@ -48,32 +64,96 @@ jobs:
   merge-shards:
     needs: playwright-tests
     runs-on: ubuntu-latest
-    if: always() # run even if shards failed
+    if: always()
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: lts/*
-          cache: npm
+          fetch-depth: 0
+
+      - name: Setup Node (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Prepare ortoni-report folder
-        run: rm -rf ortoni-report && mkdir ortoni-report
-
-      - name: Download all shard reports
+      - name: Prepare tools for artifact download
         run: |
-          for i in 1 2 3 4; do
-            echo "Downloading shard $i..."
-            gh run download --name "ortoni-report-$i" --dir ortoni-report || true
-          done
+          sudo apt-get update -y
+          sudo apt-get install -y jq unzip
+        shell: bash
+
+      - name: Download all shard artifacts (loop)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}         # owner/repo
+          API_URL: https://api.github.com
+          SHARD_COUNT: 4                         # change if you ever change number of shards
+        run: |
+          set -euo pipefail
+          mkdir -p ortoni-report
+          echo "Downloading shards 1..$SHARD_COUNT into ./ortoni-report"
 
-      - name: Merge reports
-        run: npx ortoni-report merge-report
+          for i in $(seq 1 $SHARD_COUNT); do
+            ART_NAME="ortoni-report-${i}"
+            echo "-----"
+            echo "Looking for artifact: $ART_NAME"
+
+            # Query artifacts (paginated) and find artifact id with exact name match
+            ART_ID=$(curl -sSL -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "$API_URL/repos/$REPO/actions/artifacts?per_page=100" \
+              | jq -r --arg name "$ART_NAME" '.artifacts[] | select(.name == $name) | .id' | head -n1 || true)
+
+            if [ -z "$ART_ID" ] || [ "$ART_ID" = "null" ]; then
+              echo "Warning: artifact '$ART_NAME' not found. Continuing to next shard."
+              continue
+            fi
+
+            echo "Found artifact id: $ART_ID — downloading..."
+
+            # Download artifact zip
+            ZIPFILE="/tmp/${ART_NAME}.zip"
+            curl -sSL -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "$API_URL/repos/$REPO/actions/artifacts/$ART_ID/zip" \
+              --output "$ZIPFILE"
+
+            if [ ! -s "$ZIPFILE" ]; then
+              echo "Warning: downloaded $ZIPFILE is empty. Skipping."
+              continue
+            fi
+
+            # Extract into ortoni-report while preserving internal folder structure.
+            # We use -o to overwrite files from other shards if there are collisions.
+            echo "Extracting $ZIPFILE into ortoni-report/"
+            unzip -o "$ZIPFILE" -d ortoni-report >/dev/null
+
+            echo "Shard $i extracted."
+          done
+
+          echo "Download loop finished. Final ortoni-report contents:"
+          if [ -d "ortoni-report" ]; then
+            find ortoni-report -maxdepth 4 -type f -print || true
+          else
+            echo "No ortoni-report directory created."
+          fi
+
+      - name: Merge shard reports
+        run: |
+          npx ortoni-report merge-report
+        env:
+          CI: true
+
+      - name: Show merged report output
+        run: |
+          echo "Listing ortoni-report (merged) output:"
+          find ortoni-report -maxdepth 3 -type f -print || true
 
       - name: Upload merged report
         uses: actions/upload-artifact@v4
