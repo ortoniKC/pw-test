@@ -64,7 +64,7 @@ jobs:
           name: ortoni-report-4
           path: ortoni-report
       - name: Merge shard reports
-        run: npx ortoni-report merge-shards -f index.html
+        run: npx ortoni-report merge-report
       - name: Upload merged report
         uses: actions/upload-artifact@v4
         with:
