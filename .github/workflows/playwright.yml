@@ -1,6 +1,10 @@
-name: Playwright Tests
+name: Playwright Tests with Ortoni Report
+
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
 on:
   push:
     branches: [main, master]
@@ -18,16 +22,22 @@ jobs:
         shardTotal: [4]
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      - name: Run Playwright tests
+
+      - name: Run Playwright tests (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
         run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-      - name: Upload blob report to GitHub Actions Artifacts
+
+      - name: Upload shard report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
@@ -38,42 +48,43 @@ jobs:
   merge-shards:
     needs: playwright-tests
     runs-on: ubuntu-latest
-    if: always() # Run even if the previous job failed or was cancelled
+    if: always() # run even if shards failed
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
-      - name: Download shard reports
-        uses: actions/download-artifact@v4
-        with:
-          name: ortoni-report-1
-          path: ortoni-report
-      - uses: actions/download-artifact@v4
-        with:
-          name: ortoni-report-2
-          path: ortoni-report
-      - uses: actions/download-artifact@v4
-        with:
-          name: ortoni-report-3
-          path: ortoni-report
-      - uses: actions/download-artifact@v4
-        with:
-          name: ortoni-report-4
-          path: ortoni-report
-      - name: Merge shard reports
+
+      - name: Prepare ortoni-report folder
+        run: rm -rf ortoni-report && mkdir ortoni-report
+
+      - name: Download all shard reports
+        run: |
+          for i in 1 2 3 4; do
+            echo "Downloading shard $i..."
+            gh run download --name "ortoni-report-$i" --dir ortoni-report || true
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge reports
         run: npx ortoni-report merge-report
+
       - name: Upload merged report
         uses: actions/upload-artifact@v4
         with:
           name: ortoni-report
           path: ortoni-report
           retention-days: 7
+
       - name: Deploy merged report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ortoni-report # Output folder of ortoni-report
-          force_orphan: true # Creates branch if it doesn’t exist
+          publish_dir: ortoni-report
+          force_orphan: true
