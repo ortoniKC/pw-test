@@ -1,18 +1,17 @@
 import { defineConfig, devices } from "@playwright/test";
 import { OrtoniReportConfig } from "ortoni-report";
 const config: OrtoniReportConfig = {
-  open: "never",
+  open: process.env.CI ? "never" : "always",
   projectName: "LetCode - Test Automation",
   authorName: "Koushik",
   meta: {
     OS: "MacOs",
-    Release: "4.0.0",
-    "Test cycle": "Aug 27 - 2025",
+    Release: "4.0.1",
+    "Test cycle": "Sep 13 - 2025",
     Epic: "New Feature Implementation",
   },
-  filename: "index",
-  testType: "Regression",
-  title: "My Test Title",
+  testType: "CI tests",
+  title: "LetCode - Test Automation",
 };
 
 export default defineConfig({
@@ -24,7 +23,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 4,
+  workers: process.env.CI ? 4 : 4,
   reporter: [["ortoni-report", config]],
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
