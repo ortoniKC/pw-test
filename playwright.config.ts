@@ -31,9 +31,9 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     headless: true,
-    trace: "on-first-retry",
-    screenshot: "only-on-failure",
-    video: "on-first-retry",
+    trace: "retain-on-failure",
+    screenshot: "on",
+    video: "retain-on-failure",
     baseURL: "https://letcode.in/",
   },
 
