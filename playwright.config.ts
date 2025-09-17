@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { OrtoniReportConfig } from "ortoni-report";
 const config: OrtoniReportConfig = {
-  open: process.env.CI ? "never" : "always",
+  open: process.env.CI ? "never" : "never",
   projectName: "LetCode - Test Automation",
   authorName: "Koushik",
   meta: {

@@ -1,17 +1,27 @@
 {
   "name": "pw-test",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "4.0.1",
   "scripts": {
-    "test": "npx playwright test"
+    "test": "npx playwright test",
+    "test:chrome": "npx playwright test --project=chromium",
+    "test:firefox": "npx playwright test --project=firefox",
+    "test:webkit": "npx playwright test --project=webkit",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "report": "npx ortoni-report show-report"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "ortoni-report-demo",
+    "ortoni-report",
+    "playwright",
+    "playwright report"
+  ],
+  "author": "Koushik Chatterjee - LetCode with Koushik",
   "license": "ISC",
-  "description": "",
+  "description": "This is a demo project to show how to use ortoni-report with Playwright test framework.",
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "@types/node": "^22.13.10",
-    "ortoni-report": "^4.1.0-test.3"
+    "ortoni-report": "file:../ortoni-report/ortoni-report-4.1.0-test.3.tgz"
   }
 }
