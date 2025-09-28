@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { OrtoniReportConfig } from "ortoni-report";
 const config: OrtoniReportConfig = {
-  open: process.env.CI ? "never" : "never",
+  open: process.env.CI ? "never" : "always",
   projectName: "LetCode - Test Automation",
   authorName: "Koushik",
   meta: {
@@ -10,28 +10,21 @@ const config: OrtoniReportConfig = {
     "Test cycle": "Sep 13 - 2025",
     Epic: "New Feature Implementation",
   },
+  logo: "logo.png",
   testType: "CI tests",
   title: "LetCode - Test Automation",
 };
 
 export default defineConfig({
   testDir: "tests",
-  /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
-  /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 4 : 4,
   reporter: [
     ["ortoni-report", config],
     ["html", { open: "never" }],
   ],
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-  // reporter: [["ortoni-report", config]],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     headless: true,
     trace: "retain-on-failure",
@@ -77,11 +70,4 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });

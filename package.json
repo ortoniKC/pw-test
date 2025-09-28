@@ -21,7 +21,9 @@
   "description": "This is a demo project to show how to use ortoni-report with Playwright test framework.",
   "devDependencies": {
     "@playwright/test": "^1.55.0",
-    "@types/node": "^22.13.10",
-    "ortoni-report": "file:../ortoni-report/ortoni-report-4.1.0-test.3.tgz"
+    "@types/node": "^22.13.10"
+  },
+  "dependencies": {
+    "ortoni-report": "^4.0.1"
   }
 }
