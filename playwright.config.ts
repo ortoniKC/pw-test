@@ -1,7 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 import { OrtoniReportConfig } from "ortoni-report";
 const config: OrtoniReportConfig = {
-  open: process.env.CI ? "never" : "always",
+  // open: process.env.CI ? "never" : "on-failure",
+  open: "always",
   projectName: "LetCode - Test Automation",
   authorName: "Koushik",
   meta: {
@@ -23,10 +24,9 @@ export default defineConfig({
   workers: process.env.CI ? 4 : 4,
   reporter: [
     ["ortoni-report", config],
-    ["html", { open: "never" }],
+    // ["html", { open: "never" }],
   ],
   use: {
-    headless: true,
     trace: "retain-on-failure",
     screenshot: "on",
     video: "retain-on-failure",
@@ -40,15 +40,15 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
 
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
+    // {
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
 
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
 
     /* Test against mobile viewports. */
     // {

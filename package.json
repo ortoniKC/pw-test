@@ -24,6 +24,6 @@
     "@types/node": "^22.13.10"
   },
   "dependencies": {
-    "ortoni-report": "^4.0.1"
+    "ortoni-report": "file:../ortoni-report/ortoni-report-4.0.2.tgz"
   }
 }
