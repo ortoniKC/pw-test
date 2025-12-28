@@ -26,6 +26,6 @@ test.describe("grouped tests", () => {
   test("second test in group", async ({ page }) => {
     await page.goto("https://example.com");
     const title = page.locator("h1");
-    await test.expect(title).toHaveText("Example Domain");
+    await test.expect(title).toHaveText("Example Domain1");
   });
 });
