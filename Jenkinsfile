@@ -16,12 +16,14 @@ pipeline {
             }
         }
 
-        stage('Run Playwright Tests') {
-            steps {
-                // We use '|| true' to ensure the pipeline continues to the Merge stage
-                // even if tests fail. Ortoni Report's merge-report will signal the failure.
-                sh 'npx playwright test --shard=1/2 || true'
-                sh 'npx playwright test --shard=2/2 || true'
+       stage('Run Playwright Tests') {
+            parallel {
+                stage('Shard 1') {
+                    steps { sh 'npx playwright test --shard=1/2 || true' }
+                }
+                stage('Shard 2') {
+                    steps { sh 'npx playwright test --shard=2/2 || true' }
+                }
             }
         }
 
@@ -35,18 +37,28 @@ pipeline {
 
     post {
         always {
-            // Archive the Ortoni Report
-            publishHTML(target: [
-                allowMissing: false,
-                alwaysLinkName: true,
-                keepAll: true,
-                reportDir: 'ortoni-report',
-                reportFiles: 'ortoni-report.html',
-                reportName: 'Ortoni Test Report'
-            ])
+            script {
+                // STEP 1: Unzip the report
+                // We unzip into a folder named 'final-report' to keep things clean
+                // '-o' overwrites existing files without asking
+                // '-d' specifies the destination directory
+                sh 'unzip -o ortoni-report.zip -d final-report'
+
+                // STEP 2: Publish the extracted HTML
+                publishHTML(target: [
+                    allowMissing: false,
+                    alwaysLinkName: true,
+                    keepAll: true,
+                    // vital: point to the folder where you just unzipped the file
+                    reportDir: 'final-report', 
+                    // vital: this filename must match what was inside the zip
+                    reportFiles: 'ortoni-report.html', 
+                    reportName: 'Ortoni-Test-Report'
+                ])
+            }
             
-            // Optional: Backup shard data
-            archiveArtifacts artifacts: 'ortoni-report/*.json', allowEmptyArchive: true
+            // Optional: Archive the zip file itself if you want to download it later
+            archiveArtifacts artifacts: '*.zip', allowEmptyArchive: true
         }
     }
 }
