@@ -37,25 +37,16 @@ pipeline {
 
     post {
         always {
-            script {
-                // STEP 1: Unzip the report
-                // We unzip into a folder named 'final-report' to keep things clean
-                // '-o' overwrites existing files without asking
-                // '-d' specifies the destination directory
-                sh 'unzip -o ortoni-report.zip -d final-report'
-
-                // STEP 2: Publish the extracted HTML
-                publishHTML(target: [
+            publishHTML(target: [
                     allowMissing: false,
                     alwaysLinkName: true,
                     keepAll: true,
                     // vital: point to the folder where you just unzipped the file
-                    reportDir: 'final-report', 
+                    reportDir: 'ortoni-report', 
                     // vital: this filename must match what was inside the zip
                     reportFiles: 'ortoni-report.html', 
                     reportName: 'Ortoni-Test-Report'
                 ])
-            }
             
             // Optional: Archive the zip file itself if you want to download it later
             archiveArtifacts artifacts: '*.zip', allowEmptyArchive: true
