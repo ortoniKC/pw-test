@@ -20,7 +20,7 @@ export default defineConfig({
   testDir: "tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 3,
+  retries: process.env.CI ? 1 : 1,
   workers: process.env.CI ? 4 : 4,
   reporter: [
     ["ortoni-report", config],
@@ -40,15 +40,15 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
 
-    // {
-    //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] },
-    // },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
 
-    // {
-    //   name: "webkit",
-    //   use: { ...devices["Desktop Safari"] },
-    // },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
 
     /* Test against mobile viewports. */
     // {
