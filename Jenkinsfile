@@ -60,7 +60,7 @@ pipeline {
     post {
         always {
             // Optional: Archive shard data for debugging
-            archiveArtifacts artifacts: 'ortoni-report.html', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'ortoni-report/ortoni-report.html', allowEmptyArchive: true
         }
     }
 }
