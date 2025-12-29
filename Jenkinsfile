@@ -16,40 +16,49 @@ pipeline {
             }
         }
 
-       stage('Run Playwright Tests') {
-            parallel {
-                stage('Shard 1') {
-                    steps { sh 'npx playwright test --shard=1/2 || true' }
-                }
-                stage('Shard 2') {
-                    steps { sh 'npx playwright test --shard=2/2 || true' }
-                }
+        stage('Run Playwright Tests') {
+            steps {
+                // Run shards and allow them to fail so that we can merge the results afterward.
+                // Playwright will still generate shard files even if tests fail.
+                sh 'npx playwright test --shard=1/2 || true'
+                sh 'npx playwright test --shard=2/2 || true'
             }
         }
 
-        stage('Merge Ortoni Reports') {
+        stage('Merge & Publish Report') {
             steps {
-                // This command will now exit with code 1 if any merged tests failed
+                // Merge the sharded reports into a single Ortoni Report.
                 sh 'npx ortoni-report merge-report'
+                
+                // Publish the HTML report to Jenkins.
+                publishHTML(target: [
+                    allowMissing: false,
+                    alwaysLinkName: true,
+                    keepAll: true,
+                    reportDir: 'ortoni-report',
+                    reportFiles: 'ortoni-report.html',
+                    reportName: 'Ortoni Test Report'
+                ])
+                
+                // To prevent the stage from being "always green" when tests fail,
+                // you can either use a JUnit reporter alongside Ortoni:
+                // sh 'npx playwright test --reporter=junit,ortoni-report'
+                // junit 'results.xml'
+                
+                // OR manually fail the stage if you prefer not using JUnit:
+                // script {
+                //    if (some_condition_to_check_failures) {
+                //        error("Test failures detected in Ortoni Report")
+                //    }
+                // }
             }
         }
     }
 
     post {
         always {
-            publishHTML(target: [
-                    allowMissing: false,
-                    alwaysLinkName: true,
-                    keepAll: true,
-                    // vital: point to the folder where you just unzipped the file
-                    reportDir: 'ortoni-report', 
-                    // vital: this filename must match what was inside the zip
-                    reportFiles: 'ortoni-report.html', 
-                    reportName: 'Ortoni-Test-Report'
-                ])
-            
-            // Optional: Archive the zip file itself if you want to download it later
-            archiveArtifacts artifacts: '*.zip', allowEmptyArchive: true
+            // Optional: Archive shard data for debugging
+            archiveArtifacts artifacts: 'ortoni-report.html', allowEmptyArchive: true
         }
     }
 }
