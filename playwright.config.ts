@@ -23,7 +23,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 1,
   workers: process.env.CI ? 4 : 4,
   reporter: [
-    ["junit", { outputFile: "results.xml" }],
+    ["junit"],
     ["ortoni-report", config],
     // ["html", { open: "never" }],
   ],
