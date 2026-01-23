@@ -8,8 +8,7 @@
     "test:webkit": "npx playwright test --project=webkit",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
-    "report": "npx ortoni-report show-report",
-    "updated": "npm i '/Volumes/Koushik/GitHub/ortoni-report/ortoni-report-4.0.4.tgz'"
+    "report": "npx ortoni-report show-report"
   },
   "keywords": [
     "ortoni-report-demo",
