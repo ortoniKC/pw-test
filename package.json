@@ -20,7 +20,7 @@
   "license": "ISC",
   "description": "This is a demo project to show how to use ortoni-report with Playwright test framework.",
   "devDependencies": {
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.58.0",
     "@types/node": "^22.13.10"
   },
   "dependencies": {
