@@ -1,18 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
 import { OrtoniReportConfig } from "ortoni-report";
 const config: OrtoniReportConfig = {
-  // open: process.env.CI ? "never" : "on-failure",
-  open: "always",
+  open: "never",
   projectName: "LetCode - Test Automation",
-  authorName: "Koushik",
   meta: {
     OS: "MacOs",
-    Release: "4.0.1",
-    "Test cycle": "Sep 13 - 2025",
-    Epic: "New Feature Implementation",
+    Release: "4.0.6",
+    "Test cycle": "Feb - 2026",
+    Epic: "LC-1011-Ortoni-Report",
   },
   logo: "logo.png",
-  testType: "CI tests",
+  testType: "Functional Tests",
   title: "LetCode - Test Automation",
 };
 
@@ -20,7 +18,7 @@ export default defineConfig({
   testDir: "tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  // retries: process.env.CI ? 1 : 1,
+  retries: process.env.CI ? 1 : 2,
   workers: process.env.CI ? 4 : 4,
   reporter: [
     // ["junit", { outputFile: "results.xml" }],
@@ -29,7 +27,7 @@ export default defineConfig({
   ],
   use: {
     trace: "retain-on-failure",
-    screenshot: "on",
+    screenshot: "only-on-failure",
     video: "retain-on-failure",
     baseURL: "https://letcode.in/",
   },
@@ -41,34 +39,20 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
 
-    // {
-    //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] },
-    // },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
 
-    // {
-    //   name: "webkit",
-    //   use: { ...devices["Desktop Safari"] },
-    // },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
 
     /* Test against mobile viewports. */
     {
       name: "Mobile Chrome",
       use: { ...devices["Pixel 5"] },
-    },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    {
-      name: "Google Chrome",
-      use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
   ],
 });

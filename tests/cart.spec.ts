@@ -74,35 +74,35 @@ test.describe("Cart test", () => {
           });
         });
 
-        // await test.step("Add first product to cart", async () => {
-        //   await homePage.goto();
-        //   await homePage.selectFirstProduct();
-        //   await productPage.addToCart();
-        // });
+        await test.step("Add first product to cart", async () => {
+          await homePage.goto();
+          await homePage.selectFirstProduct();
+          await productPage.addToCart();
+        });
 
-        // await test.step("Navigate to cart", async () => {
-        //   await cartPage.goto();
-        // });
+        await test.step("Navigate to cart", async () => {
+          await cartPage.goto();
+        });
 
-        // for (let i = 1; i < 9; i++) {
-        //   await test.step(`Increase product quantity to ${i + 1}`, async () => {
-        //     await cartPage.increaseQuantity();
-        //     await expect.soft(page).toHaveTitle("koushik", { timeout: 1 });
-        //   });
-        // }
+        for (let i = 1; i < 9; i++) {
+          await test.step(`Increase product quantity to ${i + 1}`, async () => {
+            await cartPage.increaseQuantity();
+            await expect.soft(page).toHaveTitle("koushik", { timeout: 1 });
+          });
+        }
 
-        // await test.step("Validate total amount precision (max 2 decimals)", async () => {
-        //   const amountText = await page
-        //     .locator("table > tbody > tr > td:nth-child(4)")
-        //     .textContent(); // Adjust selector as per your app
+        await test.step("Validate total amount precision (max 2 decimals)", async () => {
+          const amountText = await page
+            .locator("table > tbody > tr > td:nth-child(4)")
+            .textContent(); // Adjust selector as per your app
 
-        //   const amountValue = parseFloat(
-        //     amountText?.replace(/[^0-9.]/g, "") || "0"
-        //   );
-        //   const decimalPart = amountValue.toString().split(".")[1] || "";
+          const amountValue = parseFloat(
+            amountText?.replace(/[^0-9.]/g, "") || "0",
+          );
+          const decimalPart = amountValue.toString().split(".")[1] || "";
 
-        //   expect(decimalPart.length).toBeLessThanOrEqual(2);
-        // });
+          expect(decimalPart.length).toBeLessThanOrEqual(2);
+        });
       },
     );
   });
