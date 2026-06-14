@@ -44,6 +44,43 @@ test.describe("Cart test", () => {
         });
       },
     );
+    test.skip(
+      "User can a modify cart and checkout",
+      {
+        annotation: {
+          type: "basic test",
+          description: "Test to modify cart and proceed to checkout",
+        },
+        tag: ["@cart", "@checkout"],
+      },
+
+      async ({ page, browserName }) => {
+        if (browserName != "chromium") {
+          test.skip();
+        }
+        const loginPage = new LoginPage(page);
+        const homePage = new HomePage(page);
+        const productPage = new ProductPage(page);
+        const cartPage = new CartPage(page);
+
+        await loginPage.goto();
+        await loginPage.login(credentials.username, credentials.password);
+
+        await homePage.goto();
+        await homePage.selectFirstProduct();
+        await productPage.addToCart();
+
+        await cartPage.goto();
+        await cartPage.increaseQuantity();
+        await cartPage.decreaseQuantity();
+        await cartPage.checkout();
+        await page.pause();
+
+        await expect(page).toHaveTitle(/Cart/, {
+          timeout: 5,
+        });
+      },
+    );
   });
 
   test.describe("User Product @cart", () => {

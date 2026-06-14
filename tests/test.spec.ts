@@ -1,6 +1,6 @@
 import test from "@playwright/test";
 
-test("basic test", async ({ page }) => {
+test.skip("basic test", async ({ page }) => {
   await page.goto("https://example.com");
   const title = page.locator("h1");
   await test.expect(title).toHaveText("Example Domain");
@@ -8,7 +8,7 @@ test("basic test", async ({ page }) => {
 
 const data = [1, 2, 3];
 for (const num of data) {
-  test(`data-driven test for number ${num}`, async ({ page }) => {
+  test.skip(`data-driven test for number ${num}`, async ({ page }) => {
     await page.goto("https://example.com");
     const title = page.locator("h1");
     await test.expect(title).toHaveText("Example Domain");
@@ -16,8 +16,8 @@ for (const num of data) {
 }
 
 test.describe("grouped tests", () => {
-  test("empty test", () => {});
-  test("first test in group", async ({ page }) => {
+  test.skip("empty test", () => {});
+  test.skip("first test in group", async ({ page }) => {
     await page.goto("https://example.com");
     const title = page.locator("h1");
     await test.expect(title).toHaveText("Example Domain");

@@ -39,7 +39,7 @@ test("Handle new tab and interact with Edit page", async ({
   await test.step("Enter text in first input box", async () => {
     await page.pause();
     const firstInput = newPage.locator(
-      "input[placeholder='Enter first & last name']"
+      "input[placeholder='Enter first & last name']",
     );
     await firstInput.fill("koushik", { timeout: 2000 });
     await testInfo.attach("Step 4 - Text Entered", {

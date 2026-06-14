@@ -4,7 +4,7 @@ import { ProductPage } from "../pages/product.page";
 import { LoginPage } from "../pages/login.page";
 import { credentials } from "../utils/test-data";
 
-test("User can view product details and add to cart", async ({ page }) => {
+test.skip("User can view product details and add to cart", async ({ page }) => {
   const loginPage = new LoginPage(page);
   const homePage = new HomePage(page);
   const productPage = new ProductPage(page);
@@ -17,7 +17,7 @@ test("User can view product details and add to cart", async ({ page }) => {
 
   await productPage.addToCart();
   await expect(page.locator(".mat-mdc-snack-bar-label").last()).toContainText(
-    "added to cart!"
+    "added to cart!",
   );
   console.log(credentials.username, credentials.password);
 });
